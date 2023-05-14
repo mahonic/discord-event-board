@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en-UK">
+    <head>
+        <meta charset="utf-8">
+        <title>event board</title>
+    </head>
+    <body>
+        <h1>Title</h1>
+
+        <h2>Future events:</h2>
+        {% if events | length == 0 %}
+            <h3> TBA </h3>
+        {% endif %}
+        {% for event in events %}
+            <h3> {{ event.name }} </h3>
+            <div> {{ event.date }}</div>
+            <div> {{ event.place }}</div>
+            <div> {{ event.remarks }}</div>
+            <div>---</div>
+        {% endfor %}
+
+        <h3> Contact </h3>
+        <div>
+            <!--TODO make link a parameter        -->
+            <a href="https://example.org">discord link</a>
+        </div>
+        <div>
+            <!--TODO make contact email a parameter            -->
+            host contact: example @example.com
+        </div>
+    </body>
+</html>

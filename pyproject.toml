@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "discord_event_board"
+version = "0.1.0"
+description = ""
+authors = ["Rosalia Mahonic <100803315+mahonic@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+"discord.py" = "^2.2.3"
+pydantic = {extras = ["dotenv"], version = "^1.10.7"}
+Jinja2 = "^3.1.2"
+
+[tool.poetry.dev-dependencies]
+black = "^23.3.0"
+autoflake = "^2.1.1"
+isort = "^5.12.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+skip = [".venv"]
+
+[tool.autoflake]
+in_place = true
+recursive = true
+ignore_init_module_imports = true
+remove_duplicate_keys = true
+remove_unused_variables = true
+remove_all_unused_imports = true
+ignore_pass_after_docstring = true
+exclude = [".venv"]
