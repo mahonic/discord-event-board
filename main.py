@@ -1,7 +1,7 @@
 # TODO configure autoflake, isort, and black
 #  add pre-commit hooks
 #  add pipelines for running linters checks and tests
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Sequence
 
 import discord
@@ -9,7 +9,7 @@ from discord.ext import commands
 from jinja2 import Environment, FileSystemLoader
 
 from app.vos import ScheduledEventVO
-from config import Settings, get_settings
+from config import TEMPLATES_DIRECTORY, get_settings
 from loggers import app_logger
 
 intents = discord.Intents.default()
@@ -27,12 +27,13 @@ def get_app_guild(guilds: Sequence[discord.Guild]) -> discord.Guild | None:
     return None
 
 
-@dataclass
+@dataclass(frozen=True)
 class GenerateEventBoardAsHTML:
     guild: discord.Guild
-    settings: Settings
+    locale: str
+    _template_name: str = field(init=False, default="event_board.html")
 
-    async def execute(self):
+    async def execute(self) -> str:
         events = [
             ScheduledEventVO(
                 name=event.name,
@@ -40,24 +41,17 @@ class GenerateEventBoardAsHTML:
                 end_date=event.end_time,
                 place=event.location,
                 remarks=event.description,
-                locale=settings.html_locale,
+                locale=self.locale,
             )
             for event in sorted(self.guild.scheduled_events, key=lambda x: x.start_time)
         ]
         environment = Environment(
-            # todo make a config variable or move the whole env to a separate file
-            loader=FileSystemLoader("templates"),
+            loader=FileSystemLoader(TEMPLATES_DIRECTORY),
             autoescape=True,
         )
-        template = environment.get_template(
-            "event_board.html"
-        )  # TODO make a dict[enum, str] or other variable
-        content = template.render(events=events)
-        # print(content)
-        with self.settings.html_output_path.open("w") as f:
-            f.write(content)
-        # TODO check scheduled events and generate a html file based on that
-        #  use jinja templates - template.html
+        template = environment.get_template(self._template_name)
+        html_event_board = template.render(events=events)
+        return html_event_board
 
 
 @dataclass
@@ -83,6 +77,7 @@ async def on_ready():
                 id=guild.id, name=guild.name
             )
         )
+
     app_guild = get_app_guild(bot.guilds)
     if app_guild is None:
         raise ValueError(
@@ -91,7 +86,16 @@ async def on_ready():
                 settings.guild_id
             )
         )
-    await GenerateEventBoardAsHTML(app_guild, settings).execute()
+
+    html_event_board = await GenerateEventBoardAsHTML(
+        app_guild, settings.html_locale
+    ).execute()
+    # TODO replace with pushing to a remote server
+    with settings.html_output_path.open("w") as f:
+        f.write(html_event_board)
+
+    await MessageAdminsOnMissingTemplates(app_guild).execute()
+
     await bot.close()
 
 

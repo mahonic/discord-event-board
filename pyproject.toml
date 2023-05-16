@@ -35,3 +35,8 @@ remove_unused_variables = true
 remove_all_unused_imports = true
 ignore_pass_after_docstring = true
 exclude = [".venv"]
+
+[tool.pytest.ini_options]
+# This is the most obnoxious config name ever
+# explanation here https://stackoverflow.com/a/63498715 and here https://github.com/pytest-dev/pytest/issues/2482
+disable_test_id_escaping_and_forfeit_all_rights_to_community_support = true

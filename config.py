@@ -11,6 +11,7 @@ FILE_LOG_COUNT = 5
 # these are placed in Settings.logs_directory
 DISCORD_LOG_FILE_NAME = "discord.log"
 APP_LOG_FILE_NAME = "app.log"
+TEMPLATES_DIRECTORY = PROJECT_ROOT / "templates"
 
 
 class Settings(BaseSettings):

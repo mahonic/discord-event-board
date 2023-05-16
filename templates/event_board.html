@@ -14,7 +14,7 @@
         {% for event in events %}
             <h3> {{ event.name }} </h3>
             <div>
-                <b>{{ event.start_date_day_of_the_week|upper }}</b>
+                <b>{{ event.start_date_weekday|upper }}</b>
                 {{ event.start_date_day_of_the_month }}
                 {{ event.start_date_month_roman }}
                 {{ event.start_date_year }}

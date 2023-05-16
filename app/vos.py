@@ -19,7 +19,7 @@ class ScheduledEventVO:
     # TODO ~maybe~ add post init check if start_date < end_date
 
     @property
-    def start_date_day_of_the_week(self) -> str:
+    def start_date_weekday(self) -> str:
         return format_date(
             self.start_date, self._day_of_the_week_format, locale=self.locale
         )
