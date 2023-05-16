@@ -1,0 +1,11 @@
+services:
+  html-board:
+    build: .
+#    environment:
+#      - DISCORD_AUTH_TOKEN=
+#      - GUILD_ID=
+#      - HTML_LOCALE=
+    env_file:
+      - .env
+    volumes:
+      - "./output:/code/output"

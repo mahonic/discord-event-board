@@ -91,7 +91,10 @@ async def on_ready():
         app_guild, settings.html_locale
     ).execute()
     # TODO replace with pushing to a remote server
-    with settings.html_output_path.open("w") as f:
+    settings.html_output_path.parent.mkdir(exist_ok=True)
+    with settings.html_output_path.open(
+        "w",
+    ) as f:
         f.write(html_event_board)
 
     await MessageAdminsOnMissingTemplates(app_guild).execute()
