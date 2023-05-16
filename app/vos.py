@@ -20,7 +20,9 @@ class ScheduledEventVO:
 
     @property
     def start_date_day_of_the_week(self) -> str:
-        return format_date(self.start_date, self._day_of_the_week_format, locale=self.locale)
+        return format_date(
+            self.start_date, self._day_of_the_week_format, locale=self.locale
+        )
 
     @property
     def start_date_day_of_the_month(self) -> int:

@@ -1,6 +1,6 @@
 # TODO unit tests for use cases (like GenerateEventsHTML)
 #  the guild object can be mocked
-from datetime import date, datetime
+from datetime import datetime
 
 import pytest
 
@@ -17,10 +17,22 @@ class TestScheduledEventVO:
     TEST_HOURS = ["01:00", "01:33", "11:59", "12:00", "17:00", "23:59"]
 
     @classmethod
-    def get_test_scheduled_event(cls, name: str = TEST_NAME, start_date: datetime = TEST_START_DATE, end_date: datetime = TEST_END_DATE,
-                                 place: str = TEST_PLACE, remarks: str = TEST_REMARKS, locale: str = TEST_LOCALE):
+    def get_test_scheduled_event(
+        cls,
+        name: str = TEST_NAME,
+        start_date: datetime = TEST_START_DATE,
+        end_date: datetime = TEST_END_DATE,
+        place: str = TEST_PLACE,
+        remarks: str = TEST_REMARKS,
+        locale: str = TEST_LOCALE,
+    ):
         return ScheduledEventVO(
-            name=name, start_date=start_date, end_date=end_date, place=place, remarks=remarks, locale=locale
+            name=name,
+            start_date=start_date,
+            end_date=end_date,
+            place=place,
+            remarks=remarks,
+            locale=locale,
         )
 
     def test_start_day_of_the_week(self):
