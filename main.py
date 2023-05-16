@@ -1,13 +1,18 @@
 # TODO configure autoflake, isort, and black
 #  add pre-commit hooks
 #  add pipelines for running linters checks and tests
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import date
 from typing import Sequence
 
 import discord
+import roman
+from babel.dates import format_date
 from discord.ext import commands
+from jinja2 import Environment, FileSystemLoader
 
-from config import get_settings
+from app.vos import ScheduledEventVO
+from config import get_settings, Settings
 from loggers import app_logger
 
 intents = discord.Intents.default()
@@ -26,10 +31,25 @@ def get_app_guild(guilds: Sequence[discord.Guild]) -> discord.Guild | None:
 
 
 @dataclass
-class GenerateEventsHTML:
+class GenerateEventBoardAsHTML:
     guild: discord.Guild
+    settings: Settings
 
     async def execute(self):
+        events = [
+            ScheduledEventVO(name=event.name, start_date=event.start_time, end_date=event.end_time, place=event.location, remarks=event.description, locale=settings.html_locale)
+            for event in sorted(self.guild.scheduled_events, key=lambda x: x.start_time)
+        ]
+        environment = Environment(
+            # todo make a config variable or move the whole env to a separate file
+            loader=FileSystemLoader("templates"),
+            autoescape=True
+        )
+        template = environment.get_template("event_board.html")  # TODO make a dict[enum, str] or other variable
+        content = template.render(events=events)
+        # print(content)
+        with self.settings.html_output_path.open("w") as f:
+            f.write(content)
         # TODO check scheduled events and generate a html file based on that
         #  use jinja templates - template.html
         pass
@@ -66,7 +86,7 @@ async def on_ready():
                 settings.guild_id
             )
         )
-    await GenerateEventsHTML(app_guild).execute()
+    await GenerateEventBoardAsHTML(app_guild, settings).execute()
     await bot.close()
 
 

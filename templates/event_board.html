@@ -5,7 +5,7 @@
         <title>event board</title>
     </head>
     <body>
-        <h1>Title</h1>
+        <h1>EVENT BOARD - GROUP NAME HERE</h1>
 
         <h2>Future events:</h2>
         {% if events | length == 0 %}
@@ -13,8 +13,14 @@
         {% endif %}
         {% for event in events %}
             <h3> {{ event.name }} </h3>
-            <div> {{ event.date }}</div>
-            <div> {{ event.place }}</div>
+            <div>
+                <b>{{ event.start_date_day_of_the_week|upper }}</b>
+                {{ event.start_date_day_of_the_month }}
+                {{ event.start_date_month_roman }}
+                {{ event.start_date_year }}
+                <b>{{ event.start_date_hour }}</b>-{{ event.end_date_hour }}
+            </div>
+            <div> {{ event.place_without_city }} <b>{{ event.place_city }}</b></div>
             <div> {{ event.remarks }}</div>
             <div>---</div>
         {% endfor %}

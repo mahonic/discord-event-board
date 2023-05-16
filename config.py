@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     # TODO replace log level defaults with non DEBUG ones (maybe WARN or ERRORS only? - i thin app can stay as info)
     discord_log_level: str = "INFO"
     app_log_level: str = "DEBUG"
+    html_output_path: Path = PROJECT_ROOT / "output.html"
+    html_locale: str = "en_UK"
 
     class Config:
         env_file = ".env"
