@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     app_log_level: str = "INFO"
     html_output_path: Path = PROJECT_ROOT / "output" / "output.html"
     html_locale: str = "en_UK"
+    discord_invite: str = ""
 
     class Config:
         env_file = ".env"

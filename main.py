@@ -27,13 +27,18 @@ def get_app_guild(guilds: Sequence[discord.Guild]) -> discord.Guild | None:
     return None
 
 
+@dataclass(frozen=True, slots=True)
+class GenerateEventBoardDTO:
+    discord_invite: str  # TODO could in theory be a URL object with validation
+    locale: str
+
+
 @dataclass(frozen=True)
 class GenerateEventBoardAsHTML:
     guild: discord.Guild
-    locale: str
     _template_name: str = field(init=False, default="event_board.html")
 
-    async def execute(self) -> str:
+    async def execute(self, dto: GenerateEventBoardDTO) -> str:
         events = [
             ScheduledEventVO(
                 name=event.name,
@@ -41,7 +46,7 @@ class GenerateEventBoardAsHTML:
                 end_date=event.end_time,
                 place=event.location,
                 remarks=event.description,
-                locale=self.locale,
+                locale=dto.locale,
             )
             for event in sorted(self.guild.scheduled_events, key=lambda x: x.start_time)
         ]
@@ -50,7 +55,9 @@ class GenerateEventBoardAsHTML:
             autoescape=True,
         )
         template = environment.get_template(self._template_name)
-        html_event_board = template.render(events=events)
+        html_event_board = template.render(
+            events=events, discord_invite=dto.discord_invite, locale=dto.locale
+        )
         return html_event_board
 
 
@@ -87,9 +94,11 @@ async def on_ready():
             )
         )
 
-    html_event_board = await GenerateEventBoardAsHTML(
-        app_guild, settings.html_locale
-    ).execute()
+    html_event_board = await GenerateEventBoardAsHTML(app_guild).execute(
+        GenerateEventBoardDTO(
+            discord_invite=settings.discord_invite, locale=settings.html_locale
+        )
+    )
     # TODO replace with pushing to a remote server
     settings.html_output_path.parent.mkdir(exist_ok=True)
     with settings.html_output_path.open(

@@ -13,6 +13,10 @@ class TestScheduledEventVO:
     TEST_REMARKS = "event's place"
     TEST_LOCALE = "en_uk"
     TEST_HOURS = ["01:00", "01:33", "11:59", "12:00", "17:00", "23:59"]
+    TEST_YEARS = [
+        datetime.fromisoformat("2012-07-03 14:00"),
+        datetime.fromisoformat("2037-07-03 14:00"),
+    ]
 
     @classmethod
     def get_test_scheduled_event(
@@ -102,8 +106,11 @@ class TestScheduledEventVO:
         # Then
         assert scheduled_event.start_date_month_roman == roman_number
 
-    def test_start_date_year(self):
-        raise NotImplementedError()
+    @pytest.mark.parametrize("start_date", TEST_YEARS)
+    def test_start_date_year(self, start_date):
+        event = self.get_test_scheduled_event(start_date=start_date)
+        # Then
+        assert event.start_date_year == start_date.year
 
     @pytest.mark.parametrize("hour", TEST_HOURS)
     def test_start_date_hour(self, hour):
@@ -122,7 +129,19 @@ class TestScheduledEventVO:
         assert event.end_date_hour == hour
 
     def test_place_without_city(self):
-        raise NotImplementedError()
+        # Given
+        street = "3rd Happy st"
+        city = "Lemoyne"
+        place = f"{street} {city}"
+        event = self.get_test_scheduled_event(place=place)
+        # Then
+        assert event.place_without_city == street
 
     def test_place_city(self):
-        raise NotImplementedError()
+        # Given
+        street = "3rd Happy st"
+        city = "Lemoyne"
+        place = f"{street} {city}"
+        event = self.get_test_scheduled_event(place=place)
+        # Then
+        assert event.place_city == city
